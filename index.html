@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>60-Second Math Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .settings, .game-area, .end-screen {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .range-input {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .problem {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+        .score {
+            font-weight: bold;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+        }
+        #answer {
+            font-size: 20px;
+            padding: 5px;
+            width: 100px;
+        }
+        .feedback {
+            height: 20px;
+            margin: 10px 0;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>60-Second Math Challenge</h1>
+    
+    <div class="settings" id="settings-area">
+        <h2>Game Settings</h2>
+        
+        <div class="range-input">
+            <label>First Number Range:</label>
+            <div>
+                <input type="number" id="min1" value="1" min="0"> to 
+                <input type="number" id="max1" value="10" min="1">
+            </div>
+        </div>
+        
+        <div class="range-input">
+            <label>Second Number Range:</label>
+            <div>
+                <input type="number" id="min2" value="1" min="0"> to 
+                <input type="number" id="max2" value="10" min="1">
+            </div>
+        </div>
+        
+        <div class="operations">
+            <h3>Operations:</h3>
+            <label><input type="checkbox" id="addition" checked> Addition (+)</label><br>
+            <label><input type="checkbox" id="subtraction"> Subtraction (-)</label><br>
+            <label><input type="checkbox" id="multiplication"> Multiplication (×)</label><br>
+            <label><input type="checkbox" id="division"> Division (÷)</label>
+        </div>
+        
+        <button id="start-button">Start Game</button>
+    </div>
+    
+    <div class="game-area hidden" id="game-area">
+        <div class="timer">Time: <span id="time-left">60</span>s</div>
+        <div class="problem" id="problem">8 + 5 = ?</div>
+        <input type="number" id="answer" autofocus>
+        <div class="feedback" id="feedback"></div>
+        <div class="score">Score: <span id="score">0</span></div>
+    </div>
+    
+    <div class="end-screen hidden" id="end-screen">
+        <h2>Time's Up!</h2>
+        <p>Your final score: <span id="final-score">0</span></p>
+        <button id="play-again">Play Again</button>
+    </div>
+
+    <script>
+        // DOM elements
+        const settingsArea = document.getElementById('settings-area');
+        const gameArea = document.getElementById('game-area');
+        const endScreen = document.getElementById('end-screen');
+        const startButton = document.getElementById('start-button');
+        const playAgainButton = document.getElementById('play-again');
+        const timeLeftDisplay = document.getElementById('time-left');
+        const problemDisplay = document.getElementById('problem');
+        const answerInput = document.getElementById('answer');
+        const scoreDisplay = document.getElementById('score');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const feedbackDisplay = document.getElementById('feedback');
+        
+        // Game variables
+        let timeLeft = 60;
+        let score = 0;
+        let timer;
+        let currentProblem = {};
+        
+        // Event listeners
+        startButton.addEventListener('click', startGame);
+        playAgainButton.addEventListener('click', resetGame);
+        answerInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        
+        // Start the game
+        function startGame() {
+            // Check if at least one operation is selected
+            if (!document.getElementById('addition').checked && 
+                !document.getElementById('subtraction').checked && 
+                !document.getElementById('multiplication').checked && 
+                !document.getElementById('division').checked) {
+                alert('Please select at least one operation');
+                return;
+            }
+            
+            // Hide settings, show game area
+            settingsArea.classList.add('hidden');
+            gameArea.classList.remove('hidden');
+            
+            // Reset game variables
+            timeLeft = 60;
+            score = 0;
+            scoreDisplay.textContent = score;
+            timeLeftDisplay.textContent = timeLeft;
+            
+            // Start timer
+            timer = setInterval(updateTimer, 1000);
+            
+            // Generate first problem
+            generateProblem();
+            
+            // Focus on answer input
+            answerInput.focus();
+        }
+        
+        // Update the timer
+        function updateTimer() {
+            timeLeft--;
+            timeLeftDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+        
+        // Generate a new problem
+        function generateProblem() {
+            // Get number ranges
+            const min1 = parseInt(document.getElementById('min1').value);
+            const max1 = parseInt(document.getElementById('max1').value);
+            const min2 = parseInt(document.getElementById('min2').value);
+            const max2 = parseInt(document.getElementById('max2').value);
+            
+            // Select a random operation from the chosen ones
+            const operations = [];
+            if (document.getElementById('addition').checked) operations.push('+');
+            if (document.getElementById('subtraction').checked) operations.push('-');
+            if (document.getElementById('multiplication').checked) operations.push('×');
+            if (document.getElementById('division').checked) operations.push('÷');
+            
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+            
+            // Generate random numbers
+            let num1 = getRandomInt(min1, max1);
+            let num2 = getRandomInt(min2, max2);
+            let correctAnswer;
+            
+            // Ensure division problems have whole number answers
+            if (operation === '÷') {
+                if (num2 === 0) num2 = 1; // Prevent division by zero
+                correctAnswer = num1;
+                num1 = num1 * num2;
+            } else {
+                // Calculate the correct answer
+                switch(operation) {
+                    case '+': correctAnswer = num1 + num2; break;
+                    case '-': correctAnswer = num1 - num2; break;
+                    case '×': correctAnswer = num1 * num2; break;
+                }
+            }
+            
+            // Store the problem
+            currentProblem = {
+                num1: num1,
+                num2: num2,
+                operation: operation,
+                answer: correctAnswer
+            };
+            
+            // Display the problem
+            problemDisplay.textContent = `${num1} ${operation} ${num2} = ?`;
+            answerInput.value = '';
+            feedbackDisplay.textContent = '';
+            feedbackDisplay.className = 'feedback';
+        }
+        
+        // Check the user's answer
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            
+            if (isNaN(userAnswer)) {
+                return; // No answer provided
+            }
+            
+            if (userAnswer === currentProblem.answer) {
+                // Correct answer
+                score++;
+                scoreDisplay.textContent = score;
+                feedbackDisplay.textContent = 'Correct!';
+                feedbackDisplay.className = 'feedback correct';
+                
+                // Generate a new problem
+                generateProblem();
+            } else {
+                // Incorrect answer
+                feedbackDisplay.textContent = 'Incorrect!';
+                feedbackDisplay.className = 'feedback incorrect';
+            }
+        }
+        
+        // End the game
+        function endGame() {
+            clearInterval(timer);
+            gameArea.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            finalScoreDisplay.textContent = score;
+        }
+        
+        // Reset the game to play again
+        function resetGame() {
+            endScreen.classList.add('hidden');
+            settingsArea.classList.remove('hidden');
+        }
+        
+        // Helper function to get random integer between min and max (inclusive)
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+</body>
+</html>
