@@ -6,20 +6,45 @@
     <title>60-Second Math Challenge</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
+            background: #fff8dc;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             text-align: center;
         }
+        h1 {
+            color: #ff4500;
+        }
+        h2 {
+            color: #ff6347;
+        }
+        h3 {
+            color: #ff1493;
+        }
         .hidden {
             display: none;
         }
-        .settings, .game-area, .end-screen {
+        .settings {
             margin-bottom: 20px;
             padding: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid #ffa500;
             border-radius: 5px;
+            background-color: #fff4e5;
+        }
+        .game-area {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #32cd32;
+            border-radius: 5px;
+            background-color: #e0ffe4;
+        }
+        .end-screen {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ff69b4;
+            border-radius: 5px;
+            background-color: #ffe4e1;
         }
         .range-input {
             display: flex;
@@ -29,11 +54,12 @@
         .problem {
             font-size: 24px;
             margin: 20px 0;
+            color: #1e90ff;
         }
         .timer {
             font-size: 24px;
             font-weight: bold;
-            color: #d9534f;
+            color: #ff4500;
         }
         .score {
             font-weight: bold;
@@ -43,13 +69,18 @@
             margin-bottom: 20px;
         }
         button {
-            background-color: #5cb85c;
+            background-color: #ff69b4;
             color: white;
             border: none;
             padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.2s ease;
+        }
+        button:hover,
+        button:focus {
+            background-color: #ff85c3;
         }
         input[type="number"] {
             width: 80px;
@@ -63,6 +94,7 @@
         .feedback {
             height: 20px;
             margin: 10px 0;
+            color: #ff1493;
         }
         .correct {
             color: green;
