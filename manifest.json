@@ -1,0 +1,6 @@
+{
+  "name": "Minute Math",
+  "short_name": "MinuteMath",
+  "start_url": "/",
+  "display": "standalone"
+}
